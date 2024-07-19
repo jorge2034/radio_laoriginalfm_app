@@ -7,7 +7,7 @@
             <img
               :class="`track-art image ${isPlaying?'rotate2':''}`"
               alt="STUDIO94 logo"
-              src="~assets/logo.png"
+              src="~assets/logoblack.jpg"
               style="width: 98%; height: 98%"
             />
           </div>
@@ -38,22 +38,93 @@
         </div>
 
         <div class="buttons text-center">
+          <div class="playpause-track" @click="apagarDialog()">
+            <q-icon size="2rem" name="snooze" />
+          </div>
           <div v-if="!isPlaying" class="playpause-track" @click="playTrack()">
-            <q-icon size="8rem" class="play_control" name="play_circle_outline" />
+            <q-icon size="6rem" name="play_circle_outline" />
           </div>
           <div v-else class="playpause-track" @click="pauseTrack()">
-            <q-icon size="8rem" class="play_control" name="pause_circle_outline" />
+            <q-icon size="6rem" name="pause_circle_outline" />
+          </div>
+          <div class="playpause-track" @click="volumenDialog()">
+            <q-icon size="2rem" name="volume_up" />
           </div>
         </div>
 
 
       </div>
     </div>
+
+    <q-dialog v-model="volumen" :backdrop-filter="'grayscale(100%)'">
+      <q-card style="width: 300px" class="q-px-sm q-pb-md">
+        <q-card-section>
+          <div class="text-h6">Volúmen</div>
+        </q-card-section>
+
+        <q-item dense>
+          <q-item-section avatar>
+            <q-icon name="volume_up" />
+          </q-item-section>
+          <q-item-section>
+            <q-slider
+              color="#FF00AB"
+              v-model="slideVol"
+              :step="5"
+              :min="0"
+              :max="100"
+              thumb-size="25px"
+              label
+              :label-value="slideVol + '%'"
+              label-always
+            />
+          </q-item-section>
+        </q-item>
+      </q-card>
+    </q-dialog>
+
+    <q-dialog v-model="apagar" :backdrop-filter="'grayscale(100%)'">
+      <q-card style="width: 300px" class="q-px-sm q-pb-md">
+        <q-card-section>
+          <div class="text-h6">Apagado automático</div>
+        </q-card-section>
+        <q-item dense>
+          <q-item-section avatar>
+            <q-icon name="alarm" />
+          </q-item-section>
+          <q-item-section>
+            <q-slider
+              class="mx-5"
+              color="#FF0024"
+              v-model="slideAlarm"
+              :step="1"
+              :min="1"
+              :max="120"
+              thumb-size="25px"
+              label
+              :label-value="slideAlarm + 'min'"
+              label-always
+            />
+          </q-item-section>
+        </q-item>
+        <q-card-actions align="right">
+          <q-btn flat label="Cancelar" color="primary" v-close-popup />
+          <q-btn
+            flat
+            label="Iniciar"
+            color="primary"
+            @click="apagarRadio(slideAlarm)"
+            v-close-popup
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
 <script>
 import { defineComponent } from "vue";
+import { useQuasar } from "quasar";
 let curr_track = document.createElement("audio");
 let track_art = document.querySelector(".track-art");
 export default {
@@ -63,15 +134,45 @@ export default {
       nombre: "JORGE ARCE",
       now_playing: "Sonando",
       isPlaying: false,
+      volumen: false,
+      apagar: false,
+      $q: null,
+      slide: 1,
+
+      slideVol: 100,
+      slideAlarm: 1,
     };
   },
   created() {
     this.loadTrack();
+    this.$q = useQuasar();
+  },
+  watch: {
+    slideVol(newVal) {
+      this.setVolumen(newVal);
+    },
   },
   methods: {
+    setVolumen(volumen) {
+      curr_track.volume = volumen / 100;
+      console.log("volumen:", volumen / 100);
+    },
+    apagarRadio(tiempo) {
+      let tiempoMilisegundos = tiempo * 60000;
+      this.$q.notify({
+        message: "Apagado automático",
+        caption: "en " + tiempo + " min",
+        color: "primary",
+      });
+      setTimeout(() => {
+        this.isPlaying = false;
+        curr_track.pause();
+      }, tiempoMilisegundos);
+      console.log("La radio se apagara en:", tiempo);
+    },
     loadTrack() {
       console.log("reproduciendo");
-      curr_track.src = "https://ssl.aloncast.com:1654;"; // music_list[track_index].music;
+      curr_track.src = "https://ssl.aloncast.com:1663/;"; // music_list[track_index].music;
       curr_track.load();
 
       console.log(
@@ -89,6 +190,12 @@ export default {
       this.isPlaying = false;
       // wave.classList.add('loader');
     },
+    volumenDialog() {
+      this.volumen = true;
+    },
+    apagarDialog() {
+      this.apagar = true;
+    },
   },
 };
 </script>
@@ -96,7 +203,7 @@ export default {
 <style>
 body {
   font-family: Arial, Helvetica, sans-serif;
-  background: linear-gradient(to Top, #84062C, #F61548);
+  background: linear-gradient(to Top, #84062C, #F5212D);
   font-weight: bold;
 }
 .player {
@@ -228,11 +335,11 @@ body {
 @keyframes animate {
   50% {
     height: 20%;
-    background: #71ffaf;
+    background: #F5212D;
   }
 
   100% {
-    background: #007151;
+    background: #fff;
     height: 100%;
   }
 }
@@ -316,17 +423,19 @@ body {
   width: 104%;
   height: 102%;
   border-radius: 50%;
+  /* background: repeating-conic-gradient(#F5212D 40%, #fff 60%);
+  rotate: var(--rotate); */
   background-image: linear-gradient(
     var(--rotate),
-    #71ffaf,
-    #28fec1 43%,
-    #08100e
+    #F5212D,
+    #F5212D 43%,
+    #dfd9d9
   );
   position: absolute;
   z-index: 0;
   top: -1%;
   left: -2%;
-  animation: spin 2.5s normal infinite;
+  animation: spin 3.5s normal infinite;
 }
 /*
 .track-art::after {
@@ -360,5 +469,20 @@ body {
   100% {
     --rotate: 360deg;
   }
+}
+
+#playervol {
+  width: 350px;
+  height: 50px;
+  margin: 20px auto 0px auto;
+}
+
+#volume2 {
+  position: absolute;
+  margin: 0 auto;
+  height: 5px;
+  width: 300px;
+  background: #555;
+  border-radius: 15px;
 }
 </style>

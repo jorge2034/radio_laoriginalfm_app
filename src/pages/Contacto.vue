@@ -4,11 +4,11 @@
       <div class="wrapper">
         <div class="q-pa-md row items-start q-gutter-md"></div>
         <q-card class="my-card" flat bordered>
-          <q-img src="~assets/logomain.png" />
+          <q-img src="~assets/logored.jpg" />
 
           <q-card-section>
             <div class="text-overline text-orange-9">
-              La Original FM | La mejor música
+              Live Acoustic | High End Sound Company
             </div>
             <div class="text-h5 q-mt-sm q-mb-xs">Contacto</div>
             <div class="text-caption text-grey">
@@ -79,7 +79,7 @@ export default {
   methods: {
     redirectToWhatsApp() {
       const phoneNumber = "59176155280"; // Reemplaza con el número de teléfono deseado
-      const message = "Hola!!, Radio la Original. "; // Mensaje opcional
+      const message = "Hola!!, Radio Live Acoustic. "; // Mensaje opcional
 
       const url = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(
         message
@@ -87,11 +87,11 @@ export default {
       window.open(url, "_blank");
     },
     redirectToFacebook() {
-      const url = `https://www.facebook.com/LAORIGINALFMBOLIVIA`;
+      const url = `https://www.facebook.com/profile.php?id=61557425731516`;
       window.open(url, "_blank");
     },
     redirectToWeb() {
-      const url = `https://www.laoriginalfm.com/`;
+      const url = `https://www.live-acoustic.com.bo/`;
       window.open(url, "_blank");
     },
 
